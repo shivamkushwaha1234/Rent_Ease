@@ -8,16 +8,23 @@ import { useSelector } from "react-redux";
 
 function Cart() {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
+  const reduxUser = useSelector((state) => state.auth.user);
+  const user = reduxUser || JSON.parse(localStorage.getItem("user") || "null");
   const [cart, setCart] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   async function fetchCart() {
-    if (!user?._id) return;
+    if (!user?._id) {
+      setLoading(false);
+      return;
+    }
     try {
       const res = await api.get(`/cart/${user._id}`);
       setCart(res.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -28,7 +35,7 @@ function Cart() {
     }
 
     fetchCart();
-  }, [navigate, user?._id]);
+  }, [user?._id]);
 
   async function removeItem(id) {
     try {
@@ -48,7 +55,11 @@ function Cart() {
     }
   }
 
-  const total = cart.reduce((sum, item) => sum + item.product.monthlyRent * item.quantity, 0);
+  const totalItemCount = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+  const total = cart.reduce(
+    (sum, item) => sum + (item.product?.monthlyRent || item.product?.price || 0) * item.quantity,
+    0
+  );
 
   return (
     <>
@@ -56,11 +67,20 @@ function Cart() {
 
       <main className="bg-slate-50 pb-16 pt-8">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-8 rounded-4xl bg-white px-8 py-8 shadow-sm border border-slate-200">
-            <h1 className="text-4xl font-semibold text-slate-900">Shopping Cart</h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Review your selected rentals and proceed to checkout when ready.
-            </p>
+          <div className="mb-8 rounded-4xl bg-white px-8 py-8 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-semibold text-slate-900">
+                Shopping Cart ({totalItemCount} {totalItemCount === 1 ? "Item" : "Items"})
+              </h1>
+              <p className="mt-2 text-sm text-slate-500">
+                Review your selected rentals and proceed to checkout when ready.
+              </p>
+            </div>
+            {cart.length > 0 && (
+              <span className="inline-flex rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-600">
+                {cart.length} Unique {cart.length === 1 ? "Product" : "Products"} Added
+              </span>
+            )}
           </div>
 
           {cart.length === 0 ? (
@@ -75,14 +95,14 @@ function Cart() {
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex items-center gap-4">
                         <img
-                          src={item.product.image || "https://placehold.co/120x90"}
-                          alt={item.product.name}
+                          src={item.product?.imgURL || item.product?.image || "https://placehold.co/120x90"}
+                          alt={item.product?.name || item.product?.productName}
                           className="h-28 w-28 rounded-3xl object-cover"
                         />
                         <div>
-                          <h2 className="text-xl font-semibold text-slate-900">{item.product.name}</h2>
-                          <p className="text-sm text-slate-500">{item.product.category}</p>
-                          <p className="mt-2 text-blue-600 font-semibold">₹{item.product.monthlyRent}/month</p>
+                          <h2 className="text-xl font-semibold text-slate-900">{item.product?.name || item.product?.productName}</h2>
+                          <p className="text-sm text-slate-500">{item.product?.category}</p>
+                          <p className="mt-2 text-blue-600 font-semibold">₹{item.product?.monthlyRent || item.product?.price}/month</p>
                         </div>
                       </div>
 
@@ -121,8 +141,12 @@ function Cart() {
                 <h2 className="text-2xl font-semibold text-slate-900">Order Summary</h2>
                 <div className="mt-6 space-y-4">
                   <div className="flex justify-between text-sm text-slate-600">
-                    <span>Monthly total</span>
-                    <span>₹{total}</span>
+                    <span>Total Items</span>
+                    <span className="font-semibold text-slate-900">{totalItemCount}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-slate-600">
+                    <span>Monthly Total</span>
+                    <span className="font-semibold text-blue-600">₹{total}</span>
                   </div>
                   <div className="rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-600">
                     Delivery and setup included for most cities.

@@ -15,11 +15,33 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/authSlice";
 
+import { useState, useEffect } from "react";
+import api from "../services/api";
+
 function Navbar() {
-  const { user } = useSelector((state) => state.auth);
+  const reduxUser = useSelector((state) => state.auth.user);
+  const user = reduxUser || JSON.parse(localStorage.getItem("user") || "null");
   const dispatch = useDispatch();
   const location = useLocation();
   const isAdmin = user?.role === "admin";
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchCartCount() {
+      if (!user?._id) {
+        setCartCount(0);
+        return;
+      }
+      try {
+        const res = await api.get(`/cart/${user._id}`);
+        const total = res.data.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        setCartCount(total);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchCartCount();
+  }, [user?._id, location.pathname]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -53,6 +75,13 @@ function Navbar() {
           </Link>
           <Link to="/cart" className={linkStyle("/cart")}>
             <FiShoppingCart className="h-3.5 w-3.5" /> Cart
+            {cartCount > 0 && (
+              <span className={`ml-1 rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                isActive("/cart") ? "bg-white text-indigo-600" : "bg-indigo-600 text-white"
+              }`}>
+                {cartCount}
+              </span>
+            )}
           </Link>
           {user && (
             <>

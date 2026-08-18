@@ -28,11 +28,11 @@ function Checkout() {
       const res = await api.get(`/cart/${user._id}`);
       setCart(res.data);
       const total = res.data.reduce(
-        (sum, item) => sum + item.product.monthlyRent * item.quantity * (item.tenure || 3),
+        (sum, item) => sum + (item.product?.monthlyRent || item.product?.price || 0) * item.quantity * (item.tenure || 3),
         0
       );
       const deposit = res.data.reduce(
-        (sum, item) => sum + item.product.securityDeposit * item.quantity,
+        (sum, item) => sum + (item.product?.securityDeposit ?? Math.round((item.product?.price || item.product?.monthlyRent || 0) * 0.2)) * item.quantity,
         0
       );
       setTotalAmount(total);

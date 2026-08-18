@@ -91,8 +91,8 @@ function ProductDetails() {
           <div className="grid gap-10 lg:grid-cols-2">
             <div className="rounded-4xl overflow-hidden bg-white shadow-sm border border-slate-200">
               <img
-                src={product.image || "https://placehold.co/600x400"}
-                alt={product.name}
+                src={product.imgURL || product.image || "https://placehold.co/600x400"}
+                alt={product.name || product.productName}
                 className="h-full w-full object-cover"
                 onError={(e) => {
                   e.target.src = "https://placehold.co/600x400";
@@ -102,17 +102,17 @@ function ProductDetails() {
 
             <div className="space-y-6">
               <div className="rounded-4xl bg-white p-8 shadow-sm border border-slate-200">
-                <h1 className="text-4xl font-semibold text-slate-900">{product.name}</h1>
+                <h1 className="text-4xl font-semibold text-slate-900">{product.name || product.productName}</h1>
                 <p className="mt-3 text-sm uppercase tracking-[0.2em] text-slate-500">{product.category}</p>
                 <p className="mt-6 text-slate-600 leading-7">{product.description}</p>
 
                 <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-slate-500">Monthly Rent</p>
-                    <p className="text-3xl font-semibold text-blue-600">₹{product.monthlyRent}/month</p>
+                    <p className="text-3xl font-semibold text-blue-600">₹{product.monthlyRent || product.price}/month</p>
                   </div>
                   <div className="rounded-3xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                    Deposit ₹{product.securityDeposit}
+                    Deposit ₹{product.securityDeposit ?? Math.round((product.price || product.monthlyRent || 0) * 0.2)}
                   </div>
                 </div>
                 <div className="mt-4 rounded-3xl bg-slate-50 px-4 py-4 text-sm text-slate-600">

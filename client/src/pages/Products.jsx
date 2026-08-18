@@ -35,10 +35,20 @@ function Products() {
     ),
   ];
 
+  const categories = [
+    "All",
+    ...Array.from(
+      new Set(
+        products
+          .map((item) => item.category)
+          .filter(Boolean)
+      )
+    ),
+  ];
+
   const filteredProducts = products.filter((item) => {
-    const matchName = item.name
-      ? item.name.toLowerCase().includes(search.toLowerCase())
-      : false;
+    const productNameStr = item.name || item.productName || "";
+    const matchName = productNameStr.toLowerCase().includes(search.toLowerCase());
     const matchCategory = category === "All" || item.category === category;
     const matchServiceArea = serviceArea === "All" || (item.serviceArea || "All") === serviceArea;
     return matchName && matchCategory && matchServiceArea;
@@ -77,10 +87,11 @@ function Products() {
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
-                    <option value="All">All Categories</option>
-                    <option value="Furniture">Furniture</option>
-                    <option value="Appliances">Appliances</option>
-                    <option value="Electronics">Electronics</option>
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat === "All" ? "All Categories" : cat}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div className="relative">

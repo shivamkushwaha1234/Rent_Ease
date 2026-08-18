@@ -6,8 +6,8 @@ function ProductCard({ product }) {
     <div className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
       <div className="relative overflow-hidden bg-slate-100">
         <img
-          src={product.image || "https://placehold.co/400x300"}
-          alt={product.name}
+          src={product.imgURL || product.image || "https://placehold.co/400x300"}
+          alt={product.name || product.productName}
           className="h-72 w-full object-cover transition duration-500 group-hover:scale-105"
           onError={(e) => {
             e.target.src = "https://placehold.co/400x300";
@@ -19,7 +19,7 @@ function ProductCard({ product }) {
       </div>
 
       <div className="p-6">
-        <h2 className="text-xl font-semibold text-slate-900">{product.name}</h2>
+        <h2 className="text-xl font-semibold text-slate-900">{product.name || product.productName}</h2>
         <p className="mt-2 text-sm text-slate-500 leading-relaxed line-clamp-2">
           {product.description || "Comfortable rentals for every home and lifestyle."}
         </p>
@@ -28,10 +28,10 @@ function ProductCard({ product }) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm text-slate-500">Monthly Rent</p>
-              <p className="text-2xl font-semibold text-blue-600">₹{product.monthlyRent}</p>
+              <p className="text-2xl font-semibold text-blue-600">₹{product.monthlyRent || product.price}</p>
             </div>
             <div className="rounded-2xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
-              Deposit ₹{product.securityDeposit}
+              Deposit ₹{product.securityDeposit ?? Math.round((product.price || product.monthlyRent || 0) * 0.2)}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500">

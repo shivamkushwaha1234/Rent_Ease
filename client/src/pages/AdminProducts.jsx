@@ -149,7 +149,7 @@ function AdminProducts() {
                   <div key={product._id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
                     <div className="flex items-center justify-between gap-4">
                       <div>
-                        <p className="font-semibold text-slate-900">{product.name}</p>
+                        <p className="font-semibold text-slate-900">{product.name || product.productName}</p>
                         <p className="text-sm text-slate-500">{product.category} • {product.serviceArea}</p>
                         <p className="text-sm text-slate-500">Qty {product.quantity} • {product.available ? "In stock" : "Unavailable"}</p>
                       </div>

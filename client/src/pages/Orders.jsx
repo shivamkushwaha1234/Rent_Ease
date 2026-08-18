@@ -110,7 +110,7 @@ function Orders() {
                         <div key={index} className="rounded-2xl bg-white p-4 shadow-sm border border-slate-200">
                           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                              <p className="font-medium text-slate-900">{item.product?.name}</p>
+                              <p className="font-medium text-slate-900">{item.product?.name || item.product?.productName}</p>
                               <p className="text-sm text-slate-500">Tenure: {item.tenure} months</p>
                             </div>
                             <p className="text-sm text-slate-500">Qty: {item.quantity}</p>

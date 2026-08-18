@@ -27,7 +27,7 @@ export const getDashboardStats = async (req, res) => {
 
       order.items.forEach((item) => {
         if (item.product) {
-          revenue += item.product.monthlyRent * item.quantity;
+          revenue += (item.product.monthlyRent || item.product.price || 0) * item.quantity;
 
           if (isActive) {
             const previous = rentedQuantities.get(item.product._id.toString()) || 0;
